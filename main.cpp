@@ -3,13 +3,8 @@
 //
 
 #include <iostream>
-#include <memory>
 #include <array>
 #include "DTW.h"
-#include <vector>
-#include <string>
-
-#include "DEFINE.h"
 #include "Converter.h"
 #include "K_Means.h"
 
@@ -57,8 +52,18 @@ int main(int argc, const char *argv[]) {
     //c.savePacketStackToCsv("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/finishd.csv");
 
 
-    std::vector<float> a{3,2,6,4};
-    K_Means test = K_Means{0, 10, 5, a};
+    std::vector<float> a = dtw.getDtwVectorsXPercents(0.2);
+    std::cout << "+++++:\n\n";
+    for (auto &item : a) {
+        std::cout << ";" << item;
+    }
+    std::cout << "'.split(';'), dtype=np.float)\n+++++:\n\n";
+    float minElement = *(std::min_element(a.begin(), a.end()));
+    float maxElement = *(std::max_element(a.begin(), a.end()));
+
+    K_Means test = K_Means{minElement, maxElement, 1000, a};
+
+    printf("\n+++ threshold: %f", test.getThreshold());
 
     return 0;
 }

@@ -3,11 +3,7 @@
 //
 
 #include "DTW.h"
-#include <iostream>
-#include <memory>
 #include <cmath>
-#include "DEFINE.h"
-#include <algorithm>
 
 /*
 void DTW::printMatrix() {

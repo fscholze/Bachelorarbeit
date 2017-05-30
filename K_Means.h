@@ -10,16 +10,20 @@
 
 class K_Means {
 public:
-     K_Means(unsigned int centrum1, unsigned int centrum2, unsigned int maxNumberOfIterations = 10, const std::vector<float> &vector = {});
+    K_Means(float centrum1, float centrum2, unsigned int maxNumberOfIterations = 10,
+            const std::vector<float> &vector = {});
 
+    float getThreshold();
 private:
-    unsigned int centrum1;
-    unsigned int centrum2;
+    float centrum1;
+    float centrum2;
     unsigned int maxNumberOfIterations;
     std::vector<float> vector;
     std::vector<float> vectorLeft;
     std::vector<float> vectorRight;
     void run();
+
+    float average(const std::vector<float> vec);
 };
 
 

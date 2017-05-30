@@ -3,9 +3,7 @@
 //
 
 #include "Converter.h"
-#include <string>
 #include <sstream>
-#include <vector>
 #include <fstream>
 
 std::vector<CsiPacket> Converter::convertCsvToCsiPacketStack(std::string csvInputFile, int maxFrameNumber) {
@@ -88,8 +86,7 @@ std::vector<CsiPacket> Converter::getPacketsAsVector() {
 
 bool Converter::startConverting(int max) {
     packets = convertCsvToCsiPacketStack(path, max);
-    if (packets.size() > 0) return true;
-    return false;
+    return packets.size() > 0;
 }
 
 bool Converter::savePacketStackToCsv(std::string outputPath) {
