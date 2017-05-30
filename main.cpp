@@ -11,6 +11,7 @@
 
 #include "DEFINE.h"
 #include "Converter.h"
+#include "K_Means.h"
 
 
 void printVector(std::vector<int> vec) {
@@ -50,12 +51,14 @@ int main(int argc, const char *argv[]) {
     printf("+++%d - %f - %f+++", dtw.getEntries(), dtw.getSum(), res);
 
     auto bla = dtw.getFalsePacketsWithLimit(res);
-    printf("\n%d", bla.size());
+    //printf("\n%d", bla.size());
 
 
     //c.savePacketStackToCsv("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/finishd.csv");
 
 
+    std::vector<float> a{3,2,6,4};
+    K_Means test = K_Means{0, 10, 5, a};
 
     return 0;
 }

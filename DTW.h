@@ -27,7 +27,7 @@ private:
     void sort();
 
 public:
-    DTW(std::vector<CsiPacket> _vector) : vectorWithCsiValues(_vector) {};
+    DTW(std::vector<CsiPacket> vector) : vectorWithCsiValues(vector) {};
 
     void calculateCsiVectorToDtwVector();
 

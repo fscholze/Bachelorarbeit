@@ -14,6 +14,7 @@
 const unsigned short MAX_INF = 999;
 const unsigned short SUBCARRIER = 30;
 const float FALSE_LIMIT = 55;
+
 typedef std::array<float, SUBCARRIER> CsiDataArray;
 
 struct CsiPacket {
