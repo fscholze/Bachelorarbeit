@@ -6,12 +6,10 @@
 #include <sstream>
 #include <fstream>
 
-std::vector<CsiPacket> Converter::convertCsvToCsiPacketStack(std::string csvInputFile, int maxFrameNumber) {
-    bool maxFrameNumberSet = false;
+std::vector<CsiPacket> Converter::convertCsvToCsiPacketStack() {
     int frameNumber = 1;
-    if (maxFrameNumber > 0) maxFrameNumberSet = true;
 
-    std::ifstream file(csvInputFile);
+    std::ifstream file(path);
     std::string currentLine;
     std::vector<std::string> _tempCurrentLineStack;
     CsiDataArray _tempCsiValueArray;
@@ -20,7 +18,7 @@ std::vector<CsiPacket> Converter::convertCsvToCsiPacketStack(std::string csvInpu
 
     // frameno;tx;rx;subcarrier;csi
     unsigned short counter = 0;
-    while (std::getline(file, currentLine) && (frameNumber < maxFrameNumber)) {
+    while (std::getline(file, currentLine)) {
         std::string currentLineValue;
         std::stringstream sStream(currentLine);
 
@@ -44,7 +42,6 @@ std::vector<CsiPacket> Converter::convertCsvToCsiPacketStack(std::string csvInpu
             currentPacket.tx = stoi(_tempCurrentLineStack.back());
             _tempCurrentLineStack.pop_back();
             currentPacket.frame_no = stoi(_tempCurrentLineStack.back());
-            if (maxFrameNumberSet) frameNumber = currentPacket.frame_no;
             if (currentPacket.rx == antenna) pakets.push_back(currentPacket);
         }
     }
@@ -54,6 +51,49 @@ std::vector<CsiPacket> Converter::convertCsvToCsiPacketStack(std::string csvInpu
     packets.clear();
     return packets;
 }
+
+
+std::vector<CsiPacket> Converter::loadConvertedCSVToCsiPacketStack() {
+
+    std::ifstream file(path);
+    std::string currentLine;
+    std::vector<std::string> _tempCurrentLineStack;
+    CsiDataArray _tempCsiValueArray;
+    std::vector<CsiPacket> pakets;
+
+    // frameno;tx;rx;subcarrier;csi
+    while (std::getline(file, currentLine)) {
+        std::string currentLineValue;
+        std::stringstream sStream(currentLine);
+
+        _tempCurrentLineStack.clear();
+
+
+        while (std::getline(sStream, currentLineValue, ';')) {
+            _tempCurrentLineStack.push_back(currentLineValue);
+        }
+        int counter = 29;
+        while (_tempCurrentLineStack.size() > 3) {
+            _tempCsiValueArray.at(counter) = atof(_tempCurrentLineStack.back().c_str());
+            _tempCurrentLineStack.pop_back();
+            counter--;
+        }
+        CsiPacket currentPacket;
+        currentPacket.csi_values = _tempCsiValueArray;
+        currentPacket.rx = stoi(_tempCurrentLineStack.back());
+        _tempCurrentLineStack.pop_back();
+        currentPacket.tx = stoi(_tempCurrentLineStack.back());
+        _tempCurrentLineStack.pop_back();
+        currentPacket.frame_no = stoi(_tempCurrentLineStack.back());
+        pakets.push_back(currentPacket);
+    }
+    if (pakets.size() > 0) {
+        return pakets;
+    }
+    packets.clear();
+    return packets;
+}
+
 
 // Saving Packets in following scheme:
 //'frame_no','tx','rx','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30'
@@ -84,8 +124,13 @@ std::vector<CsiPacket> Converter::getPacketsAsVector() {
     return packets;
 }
 
-bool Converter::startConverting(int max) {
-    packets = convertCsvToCsiPacketStack(path, max);
+bool Converter::startConverting() {
+    packets = convertCsvToCsiPacketStack();
+    return packets.size() > 0;
+}
+
+bool Converter::loadFromConvertedCSVFile() {
+    packets = loadConvertedCSVToCsiPacketStack();
     return packets.size() > 0;
 }
 

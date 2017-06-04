@@ -20,7 +20,9 @@ public:
 
     std::vector<CsiPacket> getPacketsAsVector();
 
-    bool startConverting(int max = 0);
+    bool startConverting();
+
+    bool loadFromConvertedCSVFile();
 
     bool savePacketStackToCsv(std::string path);
 
@@ -29,7 +31,9 @@ private:
     unsigned short antenna; // recievers 1st oder 2nd antenna
     std::vector<CsiPacket> packets; // vector with all packets, where each single has SUBCARRIER entries
     std::vector<CsiPacket>
-    convertCsvToCsiPacketStack(std::string csvInputFile, int max); // convert csi packets from file
+    convertCsvToCsiPacketStack(); // convert csi packets from file
+    std::vector<CsiPacket> loadConvertedCSVToCsiPacketStack();
+
     bool savePacketStackToCsv(std::vector<CsiPacket> packetStack, std::string fileName); // save packets to file
 };
 

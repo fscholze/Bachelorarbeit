@@ -5,32 +5,9 @@
 #include "DTW.h"
 #include <cmath>
 
-/*
-void DTW::printMatrix() {
-    for (int i=0; i<SUBCARRIER; i++) {
-        for (int j=0; j<SUBCARRIER; j++) {
-            std::cout<<matrix[i][j]<<"\t";
-        }
-        std::cout<<std::endl;
-    }
-}
-*/
 
-inline void sortVector(std::vector<float> &vec) {
-    std::sort(vec.begin(), vec.end());
-}
-
-std::vector<float> DTW::getDtwVectorsXPercents(float percents) {
-    std::vector<float> _dtwVector = dtwVector;
-    //sortVector(_dtwVector);
-    if (percents < 1) {
-        int elementsCount = dtwVector.size() * percents;
-        std::vector<float> _dtwVectorPart(_dtwVector.begin(), _dtwVector.begin() + elementsCount);
-        return _dtwVectorPart;
-    }
-
+std::vector<float> DTW::getDtwVector() {
     return dtwVector;
-    //return matrix[SUBCARRIER-1][SUBCARRIER-1];
 }
 
 float DTW::getSum() {
@@ -127,9 +104,9 @@ void DTW::calculateCsiVectorToDtwVector() {
 
 }
 
-std::string DTW::printVectorWithDtwValuesXPercents(float percents) {
+std::string DTW::printVectorWithDtwValues() {
 
-    auto _dtwVector = getDtwVectorsXPercents(percents);
+    auto _dtwVector = dtwVector;
 
     std::string dtwPuffer{};
 
@@ -151,13 +128,16 @@ std::vector<int> DTW::getFalsePacketsWithLimit(float limit) {
     std::vector<int> vectorWithFalsePacketsIDs;
     for (int i = 1; i < dtwVector.size() - 1; i++) {
         if (dtwVector.at(i) > limit) {
-            auto current = dtwVector.at(i);
-            auto last = dtwVector.at(i - 1);
-            auto next = dtwVector.at(i + 1);
-            // if (fabs((last-next)) > limit) {
-            ++i;
-            vectorWithFalsePacketsIDs.push_back(i + 1);
-            //}
+            if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i - 1).csi_values, vectorWithCsiValues.at(i).csi_values) <
+                limit) {
+                //if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i-2).csi_values, vectorWithCsiValues.at(i).csi_values) < limit) {
+                //  if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i-3).csi_values, vectorWithCsiValues.at(i).csi_values) < limit) {
+                ++i;
+                int frameNo = vectorWithCsiValues.at(i).frame_no;
+                vectorWithFalsePacketsIDs.push_back(frameNo);
+                //   }
+                // }
+            }
         }
     }
     return vectorWithFalsePacketsIDs;

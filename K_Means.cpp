@@ -4,7 +4,6 @@
 
 #include "K_Means.h"
 
-
 inline void sortVector(std::vector<float> &vec) {
     std::sort(vec.begin(), vec.end());
 }
@@ -12,11 +11,11 @@ inline void sortVector(std::vector<float> &vec) {
 K_Means::K_Means(float centrum1, float centrum2, unsigned int maxNumberOfIterations, const std::vector<float> &vector)
         : maxNumberOfIterations(maxNumberOfIterations), vector(vector) {
     if (centrum1 < centrum2) {
-        centrum1 = centrum1;
-        centrum2 = centrum2;
+        this->centrum1 = centrum1;
+        this->centrum2 = centrum2;
     } else {
-        centrum1 = centrum2;
-        centrum2 = centrum1;
+        this->centrum1 = centrum2;
+        this->centrum2 = centrum1;
     }
     sortVector(this->vector);
 
@@ -64,6 +63,7 @@ void K_Means::run() {
         }
         centrum1 = average(vectorLeft);
         centrum2 = average(vectorRight);
+        counter++;
     }
 }
 
@@ -79,13 +79,11 @@ float K_Means::average(const std::vector<float> vec) {
 }
 
 float K_Means::getThreshold() {
-    if (vectorRight.size() > 0) {
-        return vectorRight.at(0);
+    if (vectorLeft.size() > 0) {
+        return vectorLeft.at(vectorLeft.size() - 1);
     }
     return 0;
 }
-
-
 
 
 

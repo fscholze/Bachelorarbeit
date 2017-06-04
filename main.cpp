@@ -3,69 +3,29 @@
 //
 
 #include <iostream>
-#include <array>
-#include "DTW.h"
-#include "Converter.h"
-#include "K_Means.h"
-
-
-void printVector(std::vector<int> vec) {
-    std::string dtwPuffer{};
-
-    for (int i = 0; i < vec.size(); i++) {
-        int vecElement = vec[i];
-        dtwPuffer.append(std::to_string(vecElement));
-        dtwPuffer.append(";");
-    }
-    dtwPuffer.pop_back();
-
-
-    std::cout << dtwPuffer << std::endl;
-}
+#include "Coordinator.h"
 
 
 int main(int argc, const char *argv[]) {
     // insert code here...
     std::cout << "Hello, World!\n";
 
-    std::string csvInputFile_log11("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/log_11.csv");
+    std::string csvInputFileFalse{"/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/20.csv"};
 
-    Converter c11_1{csvInputFile_log11, 1};
+    std::string csvInputFile_1{"/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/12.csv"};
+    auto coordinator = Coordinator(csvInputFile_1, csvInputFileFalse);
+    coordinator.run();
 
+    std::string csvInputFile_2{"/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/13.csv"};
 
-    c11_1.startConverting(60);
-    auto result = c11_1.getPacketsAsVector();
-    //c11_1.savePacketStackToCsv("20.csv");
-    DTW dtw{result};
-    dtw.calculateCsiVectorToDtwVector();
-    //dtw.sort();
-    //dtw.printVectorWithDtwValuesXPercents(1);
+    auto coordinator2 = Coordinator(csvInputFile_2, csvInputFileFalse);
+    coordinator2.run();
 
-    double res = (double) dtw.getSum() / (double) dtw.getEntries();
-    res *= 2;
-    printf("+++%d - %f - %f+++", dtw.getEntries(), dtw.getSum(), res);
+    std::string csvInputFile_3{"/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/14.csv"};
 
-    auto bla = dtw.getFalsePacketsWithLimit(res);
-    //printf("\n%d", bla.size());
+    auto coordinator3 = Coordinator(csvInputFile_3, csvInputFileFalse);
+    coordinator3.run();
 
-
-    //c.savePacketStackToCsv("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/finishd.csv");
-
-
-    std::vector<float> a = dtw.getDtwVectorsXPercents(0.2);
-    std::cout << "+++++:\n\n";
-    for (auto &item : a) {
-        std::cout << ";" << item;
-    }
-    std::cout << "'.split(';'), dtype=np.float)\n+++++:\n\n";
-    float minElement = *(std::min_element(a.begin(), a.end()));
-    float maxElement = *(std::max_element(a.begin(), a.end()));
-
-    K_Means test = K_Means{minElement, maxElement, 1000, a};
-
-    printf("\n+++ threshold: %f", test.getThreshold());
-
-    return 0;
 }
 
 

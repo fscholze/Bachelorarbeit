@@ -22,19 +22,19 @@ private:
 
     inline float getDistance(float value1, float value2);
 
-    float calcDtwFromTwoArrays(CsiDataArray &array1, CsiDataArray &array2);
 
-    void sort();
+
 
 public:
     DTW(std::vector<CsiPacket> _vector) : vectorWithCsiValues(_vector) {};
 
     void calculateCsiVectorToDtwVector();
 
-    std::vector<float> getDtwVectorsXPercents(float percents);
+    std::vector<float> getDtwVector();
 
-    std::string printVectorWithDtwValuesXPercents(float percents);
+    std::string printVectorWithDtwValues();
 
+    float calcDtwFromTwoArrays(CsiDataArray &array1, CsiDataArray &array2);
     float getSum();
 
     unsigned int getEntries();
