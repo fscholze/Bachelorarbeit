@@ -76,29 +76,6 @@ void DTW::calculateCsiVectorToDtwVector() {
     for (unsigned int i = 1; i < vectorWithCsiValues.size() - 2; i++) {
         float dtwResult = calcDtwFromTwoArrays(vectorWithCsiValues.at(i - 1).csi_values,
                                                vectorWithCsiValues.at(i).csi_values);
-        //dtwVector.insert(dtwVector.begin(), dtwResult);
-/*        float value1 = MAX_INF;
-        if (dtwVector.size() > 0) {
-            value1 = dtwVector.at(dtwVector.size()-1);
-        }
-
-        int line = 0;
-        if (dtwResult > 2*value1) {
-            dtwResult = calcDtwFromTwoArrays(vectorWithCsiValues.at(i-1).csi_values, vectorWithCsiValues.at(i+1).csi_values);
-            line = 1;
-            if (dtwResult > 2*value1) {
-                dtwResult = calcDtwFromTwoArrays(vectorWithCsiValues.at(i-1).csi_values, vectorWithCsiValues.at(i+2).csi_values);
-                line = 2;
-                if (dtwResult > 2*value1) {
-                    dtwResult = 999;
-                    line = 3;
-                    vectorWithCsiValues.at(i).csi_values = vectorWithCsiValues.at(i-1).csi_values;
-                }
-            }
-        }
-        if (dtwResult != 999) {
-
-        }*/
         dtwVector.push_back(dtwResult);
     }
 
@@ -130,13 +107,15 @@ std::vector<int> DTW::getFalsePacketsWithLimit(float limit) {
         if (dtwVector.at(i) > limit) {
             if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i - 1).csi_values, vectorWithCsiValues.at(i).csi_values) <
                 limit) {
-                //if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i-2).csi_values, vectorWithCsiValues.at(i).csi_values) < limit) {
-                //  if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i-3).csi_values, vectorWithCsiValues.at(i).csi_values) < limit) {
-                ++i;
-                int frameNo = vectorWithCsiValues.at(i).frame_no;
-                vectorWithFalsePacketsIDs.push_back(frameNo);
-                //   }
-                // }
+                if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i - 2).csi_values,
+                                         vectorWithCsiValues.at(i).csi_values) < limit) {
+                    if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i - 3).csi_values,
+                                             vectorWithCsiValues.at(i).csi_values) < limit) {
+                        ++i;
+                        int frameNo = vectorWithCsiValues.at(i).frame_no;
+                        vectorWithFalsePacketsIDs.push_back(frameNo);
+                    }
+                }
             }
         }
     }

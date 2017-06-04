@@ -5,6 +5,11 @@
 #include <iostream>
 #include "Coordinator.h"
 
+void run(std::string csvInputFile, std::string csvInputFileFalse) {
+    auto coordinator = Coordinator(csvInputFile, csvInputFileFalse);
+    coordinator.run();
+    std::cout << "\n\n";
+}
 
 int main(int argc, const char *argv[]) {
     // insert code here...
@@ -12,21 +17,18 @@ int main(int argc, const char *argv[]) {
 
     std::string csvInputFileFalse{"/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/20.csv"};
 
-    std::string csvInputFile_1{"/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/12.csv"};
-    auto coordinator = Coordinator(csvInputFile_1, csvInputFileFalse);
-    coordinator.run();
 
-    std::string csvInputFile_2{"/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/13.csv"};
-
-    auto coordinator2 = Coordinator(csvInputFile_2, csvInputFileFalse);
-    coordinator2.run();
-
-    std::string csvInputFile_3{"/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/14.csv"};
-
-    auto coordinator3 = Coordinator(csvInputFile_3, csvInputFileFalse);
-    coordinator3.run();
+    run("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/12.csv", csvInputFileFalse);
+    run("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/13.csv", csvInputFileFalse);
+    run("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/14.csv", csvInputFileFalse);
+    run("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/15.csv", csvInputFileFalse);
+    run("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/16.csv", csvInputFileFalse);
+    run("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/17.csv", csvInputFileFalse);
+    run("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/18.csv", csvInputFileFalse);
 
 }
+
+
 
 
 

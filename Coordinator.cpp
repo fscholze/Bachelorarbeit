@@ -16,46 +16,37 @@ void printVector(std::vector<int> vec) {
         dtwPuffer.append(";");
     }
     dtwPuffer.pop_back();
-    
-    std::cout << dtwPuffer << std::endl;
+
+    std::cout << dtwPuffer;
 }
 
-void Coordinator::run() {
-    Converter file{pathFile, 1};
-    file.loadFromConvertedCSVFile(); // converts csv File
-    auto resultBig = file.getPacketsAsVector();
-    std::vector<CsiPacket> resultSmall;
+void printVector(std::vector<float> vec) {
+    std::string dtwPuffer{};
 
-    {
-        int startValue = int(resultBig.size() * 0.7);
-        while (resultBig.size() > startValue) {
-            resultSmall.insert(resultSmall.begin(), (CsiPacket &&) resultBig.back());
-            resultBig.pop_back();
-        }
+    for (int i = 0; i < vec.size(); i++) {
+        int vecElement = vec[i];
+        dtwPuffer.append(std::to_string(vecElement));
+        dtwPuffer.append(";");
     }
+    dtwPuffer.pop_back();
 
-    /*
-     * Load 30% and the file from a wrong station.
-     */
-    Converter fileFalse{pathWrongPositionFile, 1};
-    fileFalse.loadFromConvertedCSVFile(); // converts csv File
-    auto resultFalseStation = fileFalse.getPacketsAsVector();
+    std::cout << dtwPuffer;
+}
 
-    /*
-     * Fill 30 Percent File with random Fake Packets
-     */
+int fillValidationFileWithRandomFakePackets(std::vector<CsiPacket> &resultFalseStation,
+                                            std::vector<CsiPacket> &resultValidation) {
     int i = 1;
     int fakePaketsInARow = 4;
     int counterWithFalse = 0;
-    while (i < resultSmall.size() - fakePaketsInARow - 5) {
-        if (rand() % 3 == 2) { // rand 0, 1 or 2 => ca 30% fake
+    while (i < resultValidation.size() - fakePaketsInARow - 5) {
+        if (rand() % 3 == 2) { // rand 0, 1 or 2 => ca 15% fake
             int random = rand() % (resultFalseStation.size() - fakePaketsInARow);
-            resultSmall.at(i) = resultFalseStation.at(random);
-            resultSmall.at(i + 1) = resultFalseStation.at(random + 1);
+            resultValidation.at(i) = resultFalseStation.at(random);
+            resultValidation.at(i + 1) = resultFalseStation.at(random + 1);
             if (rand() % 2 == 1) {
-                resultSmall.at(i + 2) = resultFalseStation.at(random + 2);
+                resultValidation.at(i + 2) = resultFalseStation.at(random + 2);
                 if (rand() % 2 == 1) {
-                    resultSmall.at(i + 3) = resultFalseStation.at(random + 3);
+                    resultValidation.at(i + 3) = resultFalseStation.at(random + 3);
                 }
             }
             counterWithFalse++;
@@ -63,33 +54,65 @@ void Coordinator::run() {
         }
         i++;
     }
+    return counterWithFalse;
+}
+
+void Coordinator::run() {
+    Converter file{pathFile, 1};
+    file.loadFromConvertedCSVFile(); // converts csv File
+    auto resultTraining = file.getPacketsAsVector();
+    std::vector<CsiPacket> resultValidation;
+
+    {
+        int startValue = int(resultTraining.size() * 0.7);
+        while (resultTraining.size() > startValue) {
+            resultValidation.insert(resultValidation.begin(), (CsiPacket &&) resultTraining.back());
+            resultTraining.pop_back();
+        }
+    }
+
+    /*
+     * Load Validation Set and the file from a wrong station.
+     */
+    Converter fileFalse{pathWrongPositionFile, 1};
+    fileFalse.loadFromConvertedCSVFile(); // converts csv File
+    auto resultFalseStation = fileFalse.getPacketsAsVector();
+
+    /*
+     * Fill Validation File with random Fake Packets
+     */
+    int counterWithFalse = fillValidationFileWithRandomFakePackets(resultFalseStation, resultValidation);
 
 
-    DTW dtw70{resultBig};
-    dtw70.calculateCsiVectorToDtwVector();
+    DTW dtwTraining{resultTraining};
+    dtwTraining.calculateCsiVectorToDtwVector();
 
     float threshold = 0.0;
 
-    auto vector70 = dtw70.getDtwVector();
-    if (vector70.size() > 0) {
-        float minElement = *(std::min_element(vector70.begin(), vector70.end()));
-        float maxElement = *(std::max_element(vector70.begin(), vector70.end()));
-        K_Means kmeans = K_Means{minElement, maxElement, 1000, vector70};
+    auto vectorTraining = dtwTraining.getDtwVector();
+    if (vectorTraining.size() > 0) {
+        std::cout << "DTW_Values: \nH = np.array('";
+        printVector(vectorTraining);
+        printf("'.split(';'), dtype=np.float)\n");
+        float minElement = *(std::min_element(vectorTraining.begin(), vectorTraining.end()));
+        float maxElement = *(std::max_element(vectorTraining.begin(), vectorTraining.end()));
+        K_Means kmeans = K_Means{minElement, maxElement, MAX_NUMBER_OF_KMEANS_ITERATIONS, vectorTraining};
         threshold = kmeans.getThreshold();
-        printf("\n+++ threshold (min: %f, max: %f): %f", minElement, maxElement, kmeans.getThreshold());
+        printf("+++ threshold (min: %f, max: %f): %f", minElement, maxElement, kmeans.getThreshold());
 
-        auto falsePackets = dtw70.getFalsePacketsWithLimit(kmeans.getThreshold());
-        printf("\n70 Prozent: von %i sind %d fehlerhaft", vector70.size(), falsePackets.size());
+        auto falsePackets = dtwTraining.getFalsePacketsWithLimit(kmeans.getThreshold());
+        printf("\nTrainings Set: von %i sind %d fehlerhaft", vectorTraining.size(), falsePackets.size());
 
 
         //c.savePacketStackToCsv("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/finishd.csv");
 
     }
-    DTW dtw30{resultSmall};
-    dtw30.calculateCsiVectorToDtwVector();
-    auto falsePackets = dtw30.getFalsePacketsWithLimit(threshold);
-    auto vector30 = dtw30.getDtwVector();
-    printf("\n30 Prozent: von %i sind %d fehlerhaft und %d wurden erkannt :D", vector30.size(), counterWithFalse,
+    DTW dtwValidation{resultValidation};
+    dtwValidation.calculateCsiVectorToDtwVector();
+    auto falsePackets = dtwValidation.getFalsePacketsWithLimit(threshold);
+    auto vectorValidation = dtwValidation.getDtwVector();
+    printf("\nValidation Set: von %i sind %d fehlerhaft und %d wurden erkannt: ", vectorValidation.size(),
+           counterWithFalse,
            falsePackets.size());
     printVector(falsePackets);
 }
