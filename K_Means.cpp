@@ -20,16 +20,6 @@ K_Means::K_Means(float centrum1, float centrum2, unsigned int maxNumberOfIterati
     sortVector(this->vector);
 
     run();
-/*
-        std::cout<<"vectorLeft:\n";
-        for (auto &item : vectorLeft) {
-            std::cout<<item<<", ";
-        }
-        std::cout<<"vectorRight:\n";
-        for (auto &item : vectorRight) {
-            std::cout<<item<<", ";
-        }
-*/
 }
 
 void K_Means::run() {

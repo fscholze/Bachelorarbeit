@@ -17,7 +17,7 @@ int main(int argc, const char *argv[]) {
 
     std::string csvInputFileFalse{"/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/20.csv"};
 
-
+    run("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/11.csv", csvInputFileFalse);
     run("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/12.csv", csvInputFileFalse);
     run("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/13.csv", csvInputFileFalse);
     run("/Users/feliksscholze/Google Drive/Bachelorarbeit/Programm/Files/csvTableRoh/14.csv", csvInputFileFalse);

@@ -103,21 +103,34 @@ std::string DTW::printVectorWithDtwValues() {
 
 std::vector<int> DTW::getFalsePacketsWithLimit(float limit) {
     std::vector<int> vectorWithFalsePacketsIDs;
-    for (int i = 1; i < dtwVector.size() - 1; i++) {
+    int i = 3;
+    while (i < dtwVector.size() - 1) {
         if (dtwVector.at(i) > limit) {
-            if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i - 1).csi_values, vectorWithCsiValues.at(i).csi_values) <
+            if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i - 1).csi_values,
+                                     vectorWithCsiValues.at(i + 1).csi_values) >
                 limit) {
-                if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i - 2).csi_values,
-                                         vectorWithCsiValues.at(i).csi_values) < limit) {
-                    if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i - 3).csi_values,
-                                             vectorWithCsiValues.at(i).csi_values) < limit) {
-                        ++i;
-                        int frameNo = vectorWithCsiValues.at(i).frame_no;
+                if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i - 1).csi_values,
+                                         vectorWithCsiValues.at(i + 2).csi_values) >
+                    limit) {
+                    if (calcDtwFromTwoArrays(vectorWithCsiValues.at(i - 1).csi_values,
+                                             vectorWithCsiValues.at(i + 3).csi_values) >
+                        limit) {
+                        int frameNo = vectorWithCsiValues.at(i).frame_no + 1;
                         vectorWithFalsePacketsIDs.push_back(frameNo);
+                        vectorWithFalsePacketsIDs.push_back(frameNo + 1);
+                        vectorWithFalsePacketsIDs.push_back(frameNo + 2);
+                        vectorWithFalsePacketsIDs.push_back(frameNo + 3);
+
+                        i++;
                     }
+
                 }
+
             }
         }
+        i++;
     }
+
+
     return vectorWithFalsePacketsIDs;
 }
